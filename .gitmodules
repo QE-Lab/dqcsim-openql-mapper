@@ -1,0 +1,3 @@
+[submodule "OpenQL"]
+	path = OpenQL
+	url = https://github.com/QE-Lab/OpenQL.git
