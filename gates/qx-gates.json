@@ -1,0 +1,55 @@
+{
+    "prep_x": {
+        "type": "prep",
+        "matrix": [
+            [1, 0], [1, 0],
+            [1, 0], [-1, 0]
+        ]
+    },
+    "prep_y": {
+        "type": "prep",
+        "matrix": [
+            [1, 0], [1, 0],
+            [0, 1], [0, -1]
+        ]
+    },
+    "prep_z": "prep",
+    "i": "I",
+    "h": "H",
+    "x": "X",
+    "y": "Y",
+    "z": "Z",
+    "x90": "RX_90",
+    "y90": "RY_90",
+    "x180": "RX_180",
+    "y180": "RY_180",
+    "mx90": "RX_M90",
+    "my90": "RY_M90",
+    "rx": "RX",
+    "ry": "RY",
+    "rz": "RZ",
+    "s": "S",
+    "sdag": "S_DAG",
+    "t": "T",
+    "tdag": "T_DAG",
+    "cnot": "C-X",
+    "toffoli": "C-C-X",
+    "cz": "C-Z",
+    "swap": "SWAP",
+    "measure": "measure",
+    "measure_x": {
+        "type": "measure",
+        "matrix": [
+            [1, 0], [1, 0],
+            [1, 0], [-1, 0]
+        ]
+    },
+    "measure_y": {
+        "type": "measure",
+        "matrix": [
+            [1, 0], [1, 0],
+            [0, 1], [0, -1]
+        ]
+    },
+    "measure_z": "measure"
+}
