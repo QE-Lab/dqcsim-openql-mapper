@@ -67,10 +67,16 @@ with Simulator(
         'verbosity': Loglevel.INFO
     }),
     ('../build/main', {
-        'init': ArbCmd(
-            'openql_mapper', 'hardware_config',
-            b'OpenQL/tests/hardware_config_cc_light.json'
-        )
+        'init': [
+            ArbCmd(
+                'openql_mapper', 'hardware_config',
+                b'test/hardware_config.json'
+            ),
+            ArbCmd(
+                'openql_mapper', 'gatemap',
+                b'test/gates.json'
+            ),
+        ]
     }),
     ('quantumsim', {
         'verbosity': Loglevel.INFO

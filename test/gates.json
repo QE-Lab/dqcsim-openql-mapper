@@ -1,13 +1,13 @@
 {
-    "prep_x": {
+    "prepx": {
         "type": "prep",
         "basis": "x"
     },
-    "prep_y": {
+    "prepy": {
         "type": "prep",
         "basis": "y"
     },
-    "prep_z": "prep",
+    "prepz": "prep",
     "i": "I",
     "h": "H",
     "x": "X",
@@ -19,7 +19,7 @@
     "y180": "RY_180",
     "mx90": "RX_M90",
     "my90": "RY_M90",
-    "rx": "RZ",
+    "rx": "RX",
     "ry": "RY",
     "rz": "RZ",
     "s": "S",
@@ -30,6 +30,7 @@
     "toffoli": "C-C-X",
     "cz": "C-Z",
     "swap": "SWAP",
+    "move": "SWAP",
     "measure": "measure",
     "measure_x": {
         "type": "measure",

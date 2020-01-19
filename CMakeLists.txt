@@ -10,13 +10,13 @@ project(dqcsim-mapper
 include(FetchContent)
 FetchContent_Declare(dqcsim
     GIT_REPOSITORY  https://github.com/mbrobbel/dqcsim.git
-    GIT_TAG         cmake-install # TODO: change to master once merged!
+    GIT_TAG         master
 )
 FetchContent_MakeAvailable(dqcsim)
 
 # Include OpenQL.
 include(OpenQL.cmake)
 
-
-add_executable(main main.cpp)
+add_executable(main main.cpp gates.cpp)
+target_include_directories(main PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(main dqcsim openql)
