@@ -1,18 +1,26 @@
+import unittest
+import dqcsim_openql_mapper
+from dqcsim.plugin import *
+from dqcsim.host import *
+import tempfile
+import os
+
+TEST_HARDWARE_CFG = """
 {
    "eqasm_compiler" : "qx",
 
    "hardware_settings": {
-	 "qubit_number": 7,
-	 "cycle_time" : 20,  
-	 "mw_mw_buffer": 0,
-	 "mw_flux_buffer": 0,
-	 "mw_readout_buffer": 0,
-	 "flux_mw_buffer": 0,
-	 "flux_flux_buffer": 0,
-	 "flux_readout_buffer": 0,
-	 "readout_mw_buffer": 0,
-	 "readout_flux_buffer": 0,
-	 "readout_readout_buffer": 0
+    "qubit_number": 7,
+    "cycle_time" : 20,  
+    "mw_mw_buffer": 0,
+    "mw_flux_buffer": 0,
+    "mw_readout_buffer": 0,
+    "flux_mw_buffer": 0,
+    "flux_flux_buffer": 0,
+    "flux_readout_buffer": 0,
+    "readout_mw_buffer": 0,
+    "readout_flux_buffer": 0,
+    "readout_readout_buffer": 0
    },
 
   "resources":
@@ -343,3 +351,107 @@
    "gate_decomposition": {
    }
 }
+"""
+
+@plugin("Deutsch-Jozsa", "Tutorial", "0.1")
+class DeutschJozsa(Frontend):
+
+    def oracle_constant_0(self, qi, qo):
+        """x -> 0 oracle function."""
+        pass
+
+    def oracle_constant_1(self, qi, qo):
+        """x -> 1 oracle function."""
+        self.x_gate(qo)
+
+    def oracle_passthrough(self, qi, qo):
+        """x -> x oracle function."""
+        self.cnot_gate(qi, qo)
+
+    def oracle_invert(self, qi, qo):
+        """x -> !x oracle function."""
+        self.cnot_gate(qi, qo)
+        self.x_gate(qo)
+
+    def deutsch_jozsa(self, qi, qo, oracle, expected):
+        """Runs the Deutsch-Jozsa algorithm on the given oracle. The oracle is
+        called with the input and output qubits as positional arguments."""
+
+        # Prepare the input qubit.
+        self.prepare(qi)
+        self.x_gate(qi)
+        self.h_gate(qi)
+
+        # Prepare the output qubit.
+        self.prepare(qo)
+        self.h_gate(qo)
+
+        # Run the oracle function.
+        oracle(qi, qo)
+
+        # Measure the output.
+        self.h_gate(qo)
+        self.measure(qo)
+        if self.get_measurement(qo).value:
+            self.info('Oracle was balanced!')
+            if expected != 'balanced':
+                raise ValueError('unexpected oracle result!')
+        else:
+            self.info('Oracle was constant!')
+            if expected != 'constant':
+                raise ValueError('unexpected oracle result!')
+
+    def handle_run(self):
+        qi, qo = self.allocate(2)
+
+        self.info('Running Deutsch-Jozsa on x -> 0...')
+        self.deutsch_jozsa(qi, qo, self.oracle_constant_0, 'constant')
+
+        self.info('Running Deutsch-Jozsa on x -> 1...')
+        self.deutsch_jozsa(qi, qo, self.oracle_constant_1, 'constant')
+
+        self.info('Running Deutsch-Jozsa on x -> x...')
+        self.deutsch_jozsa(qi, qo, self.oracle_passthrough, 'balanced')
+
+        self.info('Running Deutsch-Jozsa on x -> !x...')
+        self.deutsch_jozsa(qi, qo, self.oracle_invert, 'balanced')
+
+        self.free(qi, qo)
+
+
+class Constructor(unittest.TestCase):
+
+    def test_simple(self):
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+
+            plat_fname = tmpdir + os.sep + 'hardware_config.json'
+            gate_fname = tmpdir + os.sep + 'gates.json'
+
+            with open(plat_fname, 'w') as f:
+                f.write(TEST_HARDWARE_CFG)
+
+            dqcsim_openql_mapper.platform2gates(plat_fname, gate_fname)
+
+            with Simulator(
+                (DeutschJozsa(), {
+                    'verbosity': Loglevel.INFO
+                }),
+                ('../build/main', {
+                    'init': [
+                        ArbCmd(
+                            'openql_mapper', 'hardware_config',
+                            plat_fname.encode('utf-8')
+                        ),
+                        ArbCmd(
+                            'openql_mapper', 'gatemap',
+                            gate_fname.encode('utf-8')
+                        ),
+                    ]
+                }),
+                ('quantumsim', {
+                    'verbosity': Loglevel.INFO
+                }),
+                stderr_verbosity=Loglevel.INFO
+            ) as sim:
+                sim.run()

@@ -15,8 +15,16 @@ FetchContent_Declare(dqcsim
 FetchContent_MakeAvailable(dqcsim)
 
 # Include OpenQL.
-include(OpenQL.cmake)
+include(cmake/OpenQL.cmake)
 
-add_executable(main main.cpp gates.cpp)
-target_include_directories(main PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(main dqcsim openql)
+# Main operator executable.
+add_executable(
+    dqcsopopenql-mapper
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gates.cpp
+)
+target_include_directories(
+    dqcsopopenql-mapper PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+target_link_libraries(dqcsopopenql-mapper dqcsim openql)
