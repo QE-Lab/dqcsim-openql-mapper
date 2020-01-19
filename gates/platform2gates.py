@@ -37,21 +37,6 @@ insns = new_insns
 # Try to map based on the OpenQL names.
 unknown_gates = set()
 def to_json_line(openql):
-    x_basis = '''"matrix": [
-            [1, 0], [1, 0],
-            [1, 0], [-1, 0]
-        ]'''
-    # ^-- = sqrt(2) * H
-    y_basis = '''"matrix": [
-            [1, 0], [1, 0],
-            [0, 1], [0, -1]
-        ]'''
-    # ^-- = sqrt(2) * S * H
-
-    # TODO: my gut feeling says the above can also be written using the
-    # eigenvectors of the Pauli matrices as columns, but my linear algebra
-    # skills are basically nonexistent at this point.
-
     dqcsim = {
         'i': '"I"',
         'x': '"X"',
@@ -103,12 +88,12 @@ def to_json_line(openql):
         'cswap': '"C-SWAP"',
         'fredkin': '"C-SWAP"',
         'meas': '"measure"',
-        'measx': '{\n        "type": "measure",\n        %s\n    }' % x_basis,
-        'measy': '{\n        "type": "measure",\n        %s\n    }' % y_basis,
+        'measx': '{\n        "type": "measure",\n        "basis": "x"\n    }',
+        'measy': '{\n        "type": "measure",\n        "basis": "y"\n    }',
         'measz': '"measure"',
         'prep': '"prep"',
-        'prepx': '{\n        "type": "prep",\n        %s\n    }' % x_basis,
-        'prepy': '{\n        "type": "prep",\n        %s\n    }' % y_basis,
+        'prepx': '{\n        "type": "prep",\n        "basis": "x"\n    }',
+        'prepy': '{\n        "type": "prep",\n        "basis": "y"\n    }',
         'prepz': '"prep"',
     }.get(
         openql

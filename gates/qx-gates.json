@@ -1,17 +1,11 @@
 {
     "prep_x": {
         "type": "prep",
-        "matrix": [
-            [1, 0], [1, 0],
-            [1, 0], [-1, 0]
-        ]
+        "basis": "x"
     },
     "prep_y": {
         "type": "prep",
-        "matrix": [
-            [1, 0], [1, 0],
-            [0, 1], [0, -1]
-        ]
+        "basis": "y"
     },
     "prep_z": "prep",
     "i": "I",
@@ -39,17 +33,11 @@
     "measure": "measure",
     "measure_x": {
         "type": "measure",
-        "matrix": [
-            [1, 0], [1, 0],
-            [1, 0], [-1, 0]
-        ]
+        "basis": "x"
     },
     "measure_y": {
         "type": "measure",
-        "matrix": [
-            [1, 0], [1, 0],
-            [0, 1], [0, -1]
-        ]
+        "basis": "y"
     },
     "measure_z": "measure"
 }

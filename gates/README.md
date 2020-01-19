@@ -49,80 +49,84 @@ one of the following built-in strings (case-insensitive):
    "matrix" or "submatrix" key.
  - "SWAP" - swap gate.
  - "SQSWAP" - square-root-of-swap gate.
+ - "unitary" - custom unitary gate. Refer to the section on custom unitaries
+   for more info.
  - "measure" - measurement gate. Refer to the section on measurements for more
    info.
  - "prep" - state preparation gate. Refer to the section on prep gates for more
    info.
 
+## Custom unitary gates
+
+The "unitary" type allows you to specify the unitary matrix directly, using the
+"matrix" key. Matrices are specified as a list of lists, where each inner list
+contains two float entries representing the real and imaginary value of the
+matrix entry, and the outer list represents the matrix entries in row-major
+form. Integers are coerced to floats, so you can omit the decimal separator for
+-1, 0, and 1. The size of the matrix (plus the number of control qubits, if any -
+see next section) implies the number of qubits affected by the gate. To prevent
+having to write out irrationals like 1/sqrt(2), the matrices will automatically
+be normalized. After that, a unitary check is done to detect most typos.
+
+For instance, RX(90) could be written like this:
+
+    {
+        "type": "unitary",
+        "matrix": [
+            [1,  0], [0, -1],
+            [0, -1], [1,  0]
+        ]
+    }
+
+It becomes:
+
+                /  1  -i \
+    1/sqrt(2) * |        |
+                \ -i   1 /
+
+Of course, you can just use "RX_90" for this.
+
+Don't try to specify controlled gates by giving the full matrix, because then
+DQCsim won't detect them properly. Controlled gates are specified as follows.
+
 ## Controlled gates
 
-To make controlled gates, the above matrices are interpreted as the
-non-controlled submatrix, automatically extended for the number of control
-qubits specified in the "controlled" key, which must be a positive integer.
-If not specified, a non-controlled gate is implied. For example,
+To make controlled gates, the above predefined or custom matrices are
+interpreted as the non-controlled submatrix, automatically extended for the
+number of control qubits specified in the "controlled" key, which must be a
+positive integer. If not specified, a non-controlled gate is implied. For
+example,
 
     {
         "controlled": 1,
         "type": "X",
     }
 
-represents a CNOT gate.
+represents a CNOT gate. You can also use the "C-" shorthand in the string
+notation to do this; just using "C-X" instead of the dictionary is equivalent.
 
 Beware the "global" phase of the submatrix; it matters due to DQCsim
 synthesizing the controlled matrix by padding at the top-left side with the
 identity matrix. This is why the difference between "rz" and "phase" exists.
 
-Don't try to specify controlled gates by giving the full matrix, because then
-DQCsim won't detect them properly.
-
 ## Measurements
 
-"measure" gates without a "matrix" argument specify Z-axis measurements.
-To specify a non-Z measurement gate, you specify a 2x2 matrix representing the
-basis, giving the measurement the following semantics:
+"measure" gates by default represent a measurement in the Z basis. You can
+specify a different Pauli basis by supplying the "basis" key, which must then
+be "X", "Y", or "Z". Alternatively, you can specify an arbitrary basis by
+specifying a 2x2 matrix using "matrix". The operation then becomes equivalent
+to the following:
 
  - apply a unitary gate to the qubit defined by the Hermitian transpose of the
    given matrix;
  - measure the qubit in the Z axis;
  - apply a unitary gate to the qubit defined by the given matrix.
 
-This allows any axis/basis to be specified.
-
-Currently DQCsim only supports Z-axis measurements natively, so only Z-axis
-measurements can be detected in the DQCsim to OpenQL direction. This may change
-in the future. If/when DQCsim is updated to support this, the `gates.json` file
-format shouldn't have to change.
-
-In the OpenQL to DQCsim direction, measurement gates are always done one qubit
-at a time. In the DQCsim to OpenQL direction, multi-qubit measurements are
-converted to single-qubit measurements automatically.
-
 ## Prep gates
 
-"prep" gates without a "matrix" argument specify state initialization of the
-qubit to the |0> state. If a 2x2 matrix is specified, it is semantically
-applied as a gate immediately after the preparation, thus allowing a qubit to
-be initialized with an arbitrary state.
+"prep" gates, like measurements, default to the Z basis, accept a "basis" key
+to select a different Pauli basis, or accept a 2x2 matrix, making the operation
+equivalent to the following:
 
-DQCsim currently can't natively represent prep gates. This means a prep gate
-can never be detected in the DQCsim to OpenQL direction. In the opposite
-direction, DQCsim will decompose the prep to the following gates:
-
- - measure gate in the Z basis.
- - if the measurement returned 1, apply an X gate. The qubit is now |0>.
- - if a matrix was specified, apply it as a gate.
-
-If/when DQCsim is updated to support this, the `gates.json` file format
-shouldn't have to change.
-
-## Matrix representation
-
-Matrices are specified as a list of lists, where each inner list contains two
-float entries representing the real and imaginary value of the matrix entry,
-and the outer list represents the matrix entries in row-major form. The size
-of the matrix (plus the number of control qubits, if any) implies the number
-of qubits affected by the gate.
-
-To prevent having to write out irrationals like 1/sqrt(2), the matrices will
-automatically be normalized. After that, a unitary check is done to detect
-most typos.
+ - set the state of the qubit to |0>;
+ - apply a unitary gate to the qubit defined by the given matrix.
