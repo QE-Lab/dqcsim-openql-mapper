@@ -1,5 +1,10 @@
 # DQCsim OpenQL-mapper operator
 
+[![PyPi](https://badgen.net/pypi/v/dqcsim-openql-mapper)](https://pypi.org/project/dqcsim-openql-mapper/)
+
+See also: [DQCsim](https://github.com/mbrobbel/dqcsim) and
+[OpenQL](https://github.com/QE-Lab/OpenQL/).
+
 This repository contains some glue code to use the OpenQL Mapper as a DQCsim
 operator.
 
@@ -157,7 +162,7 @@ tool will guess correctly, but it's worth checking the result even when it
 manages to generate the complete file. If it doesn't recognize a gate, it just
 outputs a placeholder for you to fill in.
 
-<details><summary>Click me to expand the gatemap JSON file docs.</summary>
+#### File format
 
 As stated, the file consists of a mapping from OpenQL gate names to DQCsim gate
 descriptions. Such a description is one of the following:
@@ -329,5 +334,3 @@ Here's an example, generated from the QX platform file.
     "measure_z": "measure"
 }
 ```
-
-</details>
