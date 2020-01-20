@@ -127,7 +127,7 @@ setup(
 
     tests_require = [
         'nose',
-        'dqcsim-quantumsim'
+        'dqcsim-qx'
     ],
     test_suite = 'nose.collector',
 
