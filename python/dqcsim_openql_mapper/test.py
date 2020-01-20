@@ -437,7 +437,7 @@ class Constructor(unittest.TestCase):
                 (DeutschJozsa(), {
                     'verbosity': Loglevel.INFO
                 }),
-                ('../build/main', {
+                ('openql-mapper', {
                     'init': [
                         ArbCmd(
                             'openql_mapper', 'hardware_config',

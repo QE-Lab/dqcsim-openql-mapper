@@ -88,6 +88,9 @@ A very rudimentary test is included, which you can run using
 
     python3 setup.py test
 
+The test currently uses the INSTALLED operator. So you always need to reinstall
+first if you make changes!
+
 ## Usage
 
 This section assumes you know how DQCsim works. If you don't, start reading
