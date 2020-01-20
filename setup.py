@@ -66,7 +66,7 @@ class egg_info(_egg_info):
 
 setup(
     name = 'dqcsim-openql-mapper',
-    version = '0.0.1',
+    version = '0.0.2',
 
     author = 'Quantum Computer Architectures, Quantum & Computer Engineering, QuTech, Delft University of Technology',
     author_email = '',
@@ -122,7 +122,7 @@ setup(
     ],
 
     install_requires = [
-        'dqcsim',
+        'dqcsim>=0.0.13',
     ],
 
     tests_require = [

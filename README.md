@@ -8,6 +8,9 @@ See also: [DQCsim](https://github.com/mbrobbel/dqcsim) and
 This repository contains some glue code to use the OpenQL Mapper as a DQCsim
 operator.
 
+NOTE: this only works on Linux. Your mileage may vary in general; try building
+and installing from source if installing through pip doesn't work.
+
 ## Compile-time mapping (OpenQL) vs runtime mapping (DQCsim + OpenQL)
 
 It is very important to note that DQCsim is a *simulator* framework, and
