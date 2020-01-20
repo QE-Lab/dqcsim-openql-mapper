@@ -17,6 +17,10 @@ FetchContent_MakeAvailable(dqcsim)
 # Include OpenQL.
 include(cmake/OpenQL.cmake)
 
+# Use C++11.
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Main operator executable.
 add_executable(
     dqcsopopenql-mapper

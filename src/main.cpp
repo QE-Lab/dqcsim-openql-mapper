@@ -90,13 +90,13 @@ class MapperPlugin {
 public:
 
   // OpenQL platform.
-  std::unique_ptr<ql::quantum_platform> platform;
+  std::shared_ptr<ql::quantum_platform> platform;
 
   // OpenQL mapper.
   Mapper mapper;
 
   // Current OpenQL kernel.
-  std::unique_ptr<ql::quantum_kernel> kernel;
+  std::shared_ptr<ql::quantum_kernel> kernel;
 
   // Number of physical qubits in the platform.
   size_t num_qubits;
@@ -105,7 +105,7 @@ public:
   size_t kernel_counter = 0;
 
   // Map from DQCsim gates to OpenQL gate descriptions and back.
-  std::unique_ptr<OpenQLGateMap> gatemap;
+  std::shared_ptr<OpenQLGateMap> gatemap;
 
   // Map from DQCsim qubits to OpenQL qubits.
   QubitBiMap dqcs2virt;
@@ -126,7 +126,7 @@ public:
    * Constructs a new kernel, representing a new measurement-delimited block.
    */
   void new_kernel() {
-    kernel = std::make_unique<ql::quantum_kernel>(
+    kernel = std::make_shared<ql::quantum_kernel>(
       "kernel_" + std::to_string(kernel_counter),
       *platform, num_qubits);
     kernel_counter++;
@@ -199,7 +199,7 @@ public:
     }
 
     // Construct the OpenQL platform.
-    platform = std::make_unique<ql::quantum_platform>("dqcsim_platform", platform_json_fname);
+    platform = std::make_shared<ql::quantum_platform>("dqcsim_platform", platform_json_fname);
     platform->print_info();
     ql::set_platform(*platform);
     num_qubits = platform->qubit_number;
@@ -216,7 +216,7 @@ public:
 
     // Construct the DQCsim/OpenQL gatemap.
     // TODO: the epsilon value should probably be configurable.
-    gatemap = std::make_unique<OpenQLGateMap>(gatemap_json_fname, 1.0e-6);
+    gatemap = std::make_shared<OpenQLGateMap>(gatemap_json_fname, 1.0e-6);
 
     // Allocate the physical qubits downstream.
     state.allocate(num_qubits);
