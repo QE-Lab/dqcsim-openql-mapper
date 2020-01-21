@@ -324,13 +324,13 @@ public:
    * mapped gates downstream, and returns the measurement result of the last
    * gate if it's a measurement gate.
    */
-  dqcs::MeasurementSet run_mapper(
+  void run_mapper(
     dqcs::PluginState &state
   ) {
 
     // If the current kernel is empty, we don't have to do anything.
     if (kernel->c.empty()) {
-      return dqcs::MeasurementSet();
+      return;
     }
 
     // If this is the first kernel being mapped, assume that the initial
@@ -393,39 +393,6 @@ public:
     // Construct a new kernel for the next batch.
     new_kernel();
 
-    // Return the result of the last gate if it was a measurement.
-    dqcs::MeasurementSet measurements;
-    if (!desc.name.empty()) {
-      dqcs::Gate gate = gatemap->construct(desc);
-      if (gate.has_measures()) {
-        dqcs::QubitSet measures = gate.get_measures();
-        while (measures.size()) {
-
-          // Retrieve the downstream measurement result.
-          dqcs::QubitRef down_ref = measures.pop();
-          dqcs::Measurement meas = state.get_measurement(down_ref);
-
-          // Convert from downstream qubit index all the way to upstream.
-          size_t down = down_ref.get_index();
-          size_t phys = down - 1;
-          ssize_t virt = virt2phys.reverse_lookup(phys);
-          if (virt < 0) {
-            throw std::runtime_error("missing virt2phys mapping for measured qubit");
-          }
-          ssize_t dqcs = dqcs2virt.reverse_lookup(virt);
-          if (dqcs < 0) {
-            throw std::runtime_error("missing dqcs2virt mapping for measured qubit");
-          }
-          dqcs::QubitRef up_ref = dqcs::QubitRef(dqcs);
-
-          // Modify the qubit index and add it to the measurements set.
-          meas.set_qubit(up_ref);
-          measurements.set(std::move(meas));
-
-        }
-      }
-    }
-    return measurements;
   }
 
   /**
@@ -480,11 +447,44 @@ public:
     // may end up needing the measurement result to determine what the next
     // gate will be.
     if (gate.has_measures()) {
-      return run_mapper(state);
-    } else {
-      return dqcs::MeasurementSet();
+      run_mapper(state);
     }
 
+    // Return the measurements requested by this gates.
+    dqcs::MeasurementSet measurements = dqcs::MeasurementSet();
+    if (gate.has_measures()) {
+      dqcs::QubitSet measures = gate.get_measures();
+      while (measures.size()) {
+
+        // Get the upstream qubit reference.
+        dqcs::QubitRef up_ref = measures.pop();
+
+        // Convert from upstream qubit index to downstream.
+        size_t dqcs = up_ref.get_index();
+        ssize_t virt = dqcs2virt.forward_lookup(dqcs);
+        if (virt < 0) {
+          throw std::runtime_error(
+            "Missing mapping from DQCsim qubit index " + std::to_string(dqcs) + " to virtual");
+        }
+        ssize_t phys = virt2phys.forward_lookup(virt);
+        if (phys < 0) {
+          throw std::runtime_error(
+            "Missing mapping from virtual qubit index " + std::to_string(virt) + " to physical");
+        }
+        size_t down = phys + 1;
+
+        // Get the downstream qubit reference.
+        dqcs::QubitRef down_ref = dqcs::QubitRef(down);
+
+        // Get, convert, and save the measurement result.
+        dqcs::Measurement meas = state.get_measurement(down_ref);
+        meas.set_qubit(up_ref);
+        measurements.set(std::move(meas));
+
+      }
+    }
+
+    return measurements;
   }
 
   /**
