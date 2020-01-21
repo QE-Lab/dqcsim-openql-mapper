@@ -538,7 +538,7 @@ public:
 
 int main(int argc, char *argv[]) {
   MapperPlugin mapperPlugin;
-  return dqcs::Plugin::Operator("openql_mapper", "JvS", "v0.0")
+  return dqcs::Plugin::Operator("openql_mapper", "JvS", "0.0.3")
     .with_initialize(&mapperPlugin, &MapperPlugin::initialize)
     .with_allocate(&mapperPlugin, &MapperPlugin::allocate)
     .with_free(&mapperPlugin, &MapperPlugin::free)
