@@ -56,7 +56,7 @@ package. It's just convenient to use it regardlessly. Install as follows:
 This allows you to use the `openql-mapper` operator in DQCsim, and exposes the
 `platform2gates` command (more on this in a bit).
 
-### Build/install from source using setup.py
+### Local build/install from source using setup.py
 
 This mimics a complete installation.
 
@@ -78,6 +78,9 @@ work:
 Now you can install:
 
     sudo pip3 install target/python/dist/*
+
+Note that this wheel should NOT be distributed as is; it will probably only
+work on your system. See release.md for info on complete release builds.
 
 ### Build from source using CMake
 
