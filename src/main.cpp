@@ -464,7 +464,16 @@ public:
     }
 
     // Add the gate to the current kernel.
-    kernel->gate(desc.name, desc.qubits, {}, 0, desc.angle);
+    if (desc.multi_qubit_parallel) {
+      std::vector<size_t> qubits;
+      for (size_t qubit : desc.qubits) {
+        qubits.push_back(qubit);
+        kernel->gate(desc.name, qubits, {}, 0, desc.angle);
+        qubits.clear();
+      }
+    } else {
+      kernel->gate(desc.name, desc.qubits, {}, 0, desc.angle);
+    }
 
     // If the gate was a measurement gate, run the mapper now. If we try to
     // queue up the measurement, we might get a deadlock, because the frontend

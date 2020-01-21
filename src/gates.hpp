@@ -28,6 +28,7 @@ public:
   std::string name;
   std::vector<size_t> qubits;
   double angle;
+  bool multi_qubit_parallel;
 };
 
 /**
@@ -46,6 +47,13 @@ private:
    * Stores which OpenQL gates use the angle argument.
    */
   std::unordered_set<std::string> has_angle;
+
+  /**
+   * Stores which OpenQL gates have a DQCsim equivalent where having multiple
+   * target qubits means doing multiple gates in parallel (masurements and
+   * preps).
+   */
+  std::unordered_set<std::string> is_multi_qubit_parallel;
 
   /**
    * Constructs the gate map.

@@ -160,11 +160,13 @@ void OpenQLGateMap::add_mapping(
 
     // Handle measurement and prep.
     if (typ == "measure") {
+      is_multi_qubit_parallel.insert(openql);
       map.with_measure(openql, matrix, epsilon);
       DQCSIM_DEBUG("Registered measurement for %s into gatemap", openql.c_str());
       return;
     }
     if (typ == "prep") {
+      is_multi_qubit_parallel.insert(openql);
       map.with_prep(openql, matrix, epsilon);
       DQCSIM_DEBUG("Registered prep for %s into gatemap", openql.c_str());
       return;
@@ -278,6 +280,10 @@ OpenQLGateDescription OpenQLGateMap::detect(const dqcs::Gate &gate) {
   } else {
     desc.angle = 0.0;
   }
+
+  // Handle gates that should be deconstructed into multiple parallel
+  // single-qubit gates (measurement and prep gates).
+  desc.multi_qubit_parallel = is_multi_qubit_parallel.count(desc.name) > 0;
 
   // Convert the qubit references.
   while (qubits.size()) {
