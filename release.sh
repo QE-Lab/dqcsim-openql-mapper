@@ -2,8 +2,8 @@
 
 rm -rf dist
 
-docker build --pull -t dqcsim-openql-mapper-wheel . && \
-docker run -it --name dqcsim-openql-mapper-wheel dqcsim-openql-mapper-wheel && \
-docker cp dqcsim-openql-mapper-wheel:/io/dist/ .
+docker build --pull -t dqcsim-plugin-wheel . && \
+docker run -it --name dqcsim-plugin-wheel dqcsim-plugin-wheel && \
+docker cp dqcsim-plugin-wheel:/io/dist/ .
 
-docker rm dqcsim-openql-mapper-wheel
+docker rm dqcsim-plugin-wheel

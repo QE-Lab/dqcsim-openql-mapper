@@ -38,3 +38,19 @@ another, rather big player).
 So what we're doing is patching PyPa's packaging module that pulls in
 dependencies (`auditwheel`) to whitelist `libdqcsim.so`. Basically, lying. It
 ain't pretty, but that's the way it is right now.
+
+While we were at it, we had to fix a couple other wheel-related stuff though
+`auditwheel` patches:
+
+ - The dependencies for binaries in the `.data` section of the wheel were not
+   placed in the wheel correctly.
+ - The correct tag for this kind of wheel (`libdqcsim.so` lies aside) is
+   `py3-none-manylinux2010_x86_64`. However, `pip` is absolutely retarded in
+   its compatibility check, and doesn't understand this *combination* of tags.
+   The next best combination (for Python 3.6) is
+   `py36-none-manylinux2010_x86_64`. So, to be able to install this package on
+   various different Python versions, we need to make identical wheels with
+   slightly different filenames.
+ - We need to put sleeps in between the generation of aforementioned identical
+   wheels to make their hashes different, otherwise PyPi rejects the identical
+   file contents.
